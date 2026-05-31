@@ -1,0 +1,233 @@
+/* ------------------------------------------------------------------ *
+   Catálogo — paleta clara y neutra.
+   Las fotos (trajes de tehuana, huipiles, lienzos) son muy coloridas,
+   así que el catálogo usa tonos suaves que NO compiten con ellas:
+   fondo crema, texto carbón, acentos en gris cálido.
+ * ------------------------------------------------------------------ */
+
+:root {
+  --bg:        #faf8f5;   /* crema muy claro */
+  --surface:   #ffffff;   /* tarjetas */
+  --ink:       #2b2b2b;   /* texto principal (carbón) */
+  --ink-soft:  #7a756e;   /* texto secundario */
+  --line:      #e7e2da;   /* bordes sutiles */
+  --accent:    #b9a98f;   /* gris cálido / arena (neutro) */
+  --accent-ink:#3d3528;
+  --shadow:    0 1px 3px rgba(43, 43, 43, 0.06);
+  --radius:    12px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+/* ----- Header ----- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(250, 248, 245, 0.92);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 1.25rem 0.75rem;
+}
+
+.site-header h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  align-items: center;
+}
+
+.search {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 0.55rem 0.85rem;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  outline: none;
+}
+.search:focus { border-color: var(--accent); }
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.filtro {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.filtro:hover { border-color: var(--accent); }
+.filtro.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.conteo {
+  margin: 0.6rem 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* ----- Grid ----- */
+
+main { padding: 1.25rem; }
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.card[hidden] { display: none; }   /* respeta el atributo hidden al filtrar */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-img {
+  aspect-ratio: 1 / 1;
+  background: #f1ede7;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* foto completa dentro del cuadro (no recorta) */
+  display: block;
+}
+
+.card-info {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.codigo {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.origen {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vacio,
+.site-footer p {
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.site-footer {
+  padding: 1.5rem 1rem 2.5rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
+}
+
+/* ----- Lightbox / zoom ----- */
+
+.lightbox[hidden] { display: none; }   /* respeta el atributo hidden */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(43, 43, 43, 0.82);
+  backdrop-filter: blur(4px);
+  cursor: zoom-out;
+}
+
+.lightbox-fig {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lightbox-fig img {
+  max-width: 100%;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+.lightbox-fig figcaption {
+  color: #fff;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.25); }
+
+/* ----- Responsive (celular) ----- */
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.7rem; }
+  .site-header h1 { font-size: 1.2rem; }
+}

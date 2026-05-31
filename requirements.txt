@@ -1,0 +1,4 @@
+pyairtable>=2.3
+requests>=2.31
+Pillow>=10.2
+Jinja2>=3.1

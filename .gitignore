@@ -1,0 +1,20 @@
+# Secretos — el token NUNCA se sube
+.env
+*.token
+secrets*
+
+# Originales temporales de fotos (no se conservan)
+tmp/
+*.orig
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Log del build
+build.log
+
+# OS
+.DS_Store

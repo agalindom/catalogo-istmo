@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ titulo }}</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>{{ titulo }}</h1>
+    <div class="controls">
+      <input
+        type="search"
+        id="buscador"
+        class="search"
+        placeholder="Buscar por código…"
+        autocomplete="off"
+        aria-label="Buscar por código">
+      <div class="filtros" role="group" aria-label="Filtrar por origen">
+        <button class="filtro is-active" data-origen="">Todos</button>
+        {% for origen in origenes %}
+        <button class="filtro" data-origen="{{ origen }}">{{ origen }}</button>
+        {% endfor %}
+      </div>
+    </div>
+    <p class="conteo" id="conteo"></p>
+  </header>
+
+  <main>
+    <ul class="grid" id="grid">
+      {% for p in productos %}
+      <li class="card" data-origen="{{ p.origen }}" data-codigo="{{ p.codigo|lower }}">
+        <div class="card-img">
+          <img src="{{ p.imagen }}" alt="{{ p.origen }} {{ p.codigo }}" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">{{ p.codigo }}</span>
+          <span class="origen">{{ p.origen }}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="vacio" id="vacio" hidden>No hay productos que coincidan.</p>
+  </main>
+
+  <!-- Lightbox / zoom -->
+  <div class="lightbox" id="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
+    <figure class="lightbox-fig">
+      <img id="lightboxImg" src="" alt="">
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+  </div>
+
+  <footer class="site-footer">
+    <p>{{ productos|length }} productos</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

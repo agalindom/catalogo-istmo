@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Catálogo</h1>
+    <div class="controls">
+      <input
+        type="search"
+        id="buscador"
+        class="search"
+        placeholder="Buscar por código…"
+        autocomplete="off"
+        aria-label="Buscar por código">
+      <div class="filtros" role="group" aria-label="Filtrar por origen">
+        <button class="filtro is-active" data-origen="">Todos</button>
+        
+        <button class="filtro" data-origen="Istmo">Istmo</button>
+        
+        <button class="filtro" data-origen="Lienzos">Lienzos</button>
+        
+        <button class="filtro" data-origen="Trajes">Trajes</button>
+        
+      </div>
+    </div>
+    <p class="conteo" id="conteo"></p>
+  </header>
+
+  <main>
+    <ul class="grid" id="grid">
+      
+      <li class="card" data-origen="Trajes" data-codigo="65">
+        <div class="card-img">
+          <img src="img/trajes-65.webp" alt="Trajes 65" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">65</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Lienzos" data-codigo="153">
+        <div class="card-img">
+          <img src="img/lienzos-153.webp" alt="Lienzos 153" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">153</span>
+          <span class="origen">Lienzos</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Lienzos" data-codigo="155">
+        <div class="card-img">
+          <img src="img/lienzos-155.webp" alt="Lienzos 155" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">155</span>
+          <span class="origen">Lienzos</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Trajes" data-codigo="157">
+        <div class="card-img">
+          <img src="img/trajes-157.webp" alt="Trajes 157" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">157</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Lienzos" data-codigo="168">
+        <div class="card-img">
+          <img src="img/lienzos-168.webp" alt="Lienzos 168" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">168</span>
+          <span class="origen">Lienzos</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Lienzos" data-codigo="245">
+        <div class="card-img">
+          <img src="img/lienzos-245.webp" alt="Lienzos 245" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">245</span>
+          <span class="origen">Lienzos</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Trajes" data-codigo="317">
+        <div class="card-img">
+          <img src="img/trajes-317.webp" alt="Trajes 317" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">317</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Trajes" data-codigo="327">
+        <div class="card-img">
+          <img src="img/trajes-327.webp" alt="Trajes 327" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">327</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Lienzos" data-codigo="341">
+        <div class="card-img">
+          <img src="img/lienzos-341.webp" alt="Lienzos 341" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">341</span>
+          <span class="origen">Lienzos</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Trajes" data-codigo="382">
+        <div class="card-img">
+          <img src="img/trajes-382.webp" alt="Trajes 382" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">382</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="420">
+        <div class="card-img">
+          <img src="img/istmo-420.webp" alt="Istmo 420" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">420</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Lienzos" data-codigo="440">
+        <div class="card-img">
+          <img src="img/lienzos-440.webp" alt="Lienzos 440" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">440</span>
+          <span class="origen">Lienzos</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Trajes" data-codigo="447">
+        <div class="card-img">
+          <img src="img/trajes-447.webp" alt="Trajes 447" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">447</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Trajes" data-codigo="451">
+        <div class="card-img">
+          <img src="img/trajes-451.webp" alt="Trajes 451" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">451</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Trajes" data-codigo="452">
+        <div class="card-img">
+          <img src="img/trajes-452.webp" alt="Trajes 452" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">452</span>
+          <span class="origen">Trajes</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="456">
+        <div class="card-img">
+          <img src="img/istmo-456.webp" alt="Istmo 456" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">456</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="530">
+        <div class="card-img">
+          <img src="img/istmo-530.webp" alt="Istmo 530" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">530</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="531">
+        <div class="card-img">
+          <img src="img/istmo-531.webp" alt="Istmo 531" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">531</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Lienzos" data-codigo="560">
+        <div class="card-img">
+          <img src="img/lienzos-560.webp" alt="Lienzos 560" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">560</span>
+          <span class="origen">Lienzos</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="573">
+        <div class="card-img">
+          <img src="img/istmo-573.webp" alt="Istmo 573" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">573</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="586">
+        <div class="card-img">
+          <img src="img/istmo-586.webp" alt="Istmo 586" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">586</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="684">
+        <div class="card-img">
+          <img src="img/istmo-684.webp" alt="Istmo 684" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">684</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+      <li class="card" data-origen="Istmo" data-codigo="806">
+        <div class="card-img">
+          <img src="img/istmo-806.webp" alt="Istmo 806" loading="lazy" decoding="async">
+        </div>
+        <div class="card-info">
+          <span class="codigo">806</span>
+          <span class="origen">Istmo</span>
+        </div>
+      </li>
+      
+    </ul>
+    <p class="vacio" id="vacio" hidden>No hay productos que coincidan.</p>
+  </main>
+
+  <!-- Lightbox / zoom -->
+  <div class="lightbox" id="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
+    <figure class="lightbox-fig">
+      <img id="lightboxImg" src="" alt="">
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+  </div>
+
+  <footer class="site-footer">
+    <p>23 productos</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
