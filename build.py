@@ -90,6 +90,11 @@ DOWNLOAD_PAUSE = 0.0      # las fotos van al CDN de Airtable, no a la API
 
 TITULO = "Catálogo"
 
+# Mostrar precios en el catálogo. Por ahora False (decisión de negocio).
+# Ponlo en True para que los precios aparezcan en las tarjetas y el zoom.
+# Cuando es False, los precios NO se escriben en el HTML publicado.
+VER_PRECIOS = False
+
 # --------------------------------------------------------------------------- #
 # Logging
 # --------------------------------------------------------------------------- #
@@ -203,7 +208,16 @@ def descargar_y_optimizar(url: str, destino: Path) -> bool:
 # Build
 # --------------------------------------------------------------------------- #
 
-def preparar_salida() -> None:
+def preparar_salida(solo_render: bool = False) -> None:
+    if solo_render:
+        # Conserva las fotos ya descargadas; solo re-genera HTML y assets.
+        if not OUT_IMG_DIR.exists():
+            log.error("--solo-render requiere fotos ya descargadas en %s", OUT_IMG_DIR)
+            log.error("Corre primero un build normal (sin --solo-render).")
+            sys.exit(1)
+        OUT_ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+        (OUT_DIR / ".nojekyll").write_text("", encoding="utf-8")
+        return
     if OUT_DIR.exists():
         shutil.rmtree(OUT_DIR)
     OUT_IMG_DIR.mkdir(parents=True)
@@ -228,9 +242,11 @@ def renderizar(productos: list[Producto]) -> None:
     )
     template = env.get_template("index.html.j2")
     origenes = sorted({p.origen for p in productos})
-    html = template.render(titulo=TITULO, productos=productos, origenes=origenes)
+    html = template.render(
+        titulo=TITULO, productos=productos, origenes=origenes, ver_precios=VER_PRECIOS
+    )
     (OUT_DIR / "index.html").write_text(html, encoding="utf-8")
-    log.info("  index.html generado (%d productos)", len(productos))
+    log.info("  index.html generado (%d productos, precios=%s)", len(productos), VER_PRECIOS)
 
 
 def main() -> None:
@@ -239,10 +255,16 @@ def main() -> None:
         "--limit", type=int, default=None, metavar="N",
         help="Mini-preview: descarga como máximo N productos por base.",
     )
+    parser.add_argument(
+        "--solo-render", action="store_true",
+        help="Re-genera el HTML reusando las fotos ya descargadas (no descarga nada).",
+    )
     args = parser.parse_args()
 
     inicio = time.time()
-    if args.limit:
+    if args.solo_render:
+        log.info("=== Re-render del catálogo (sin descargar fotos) ===")
+    elif args.limit:
         log.info("=== Build del catálogo (PREVIEW: %d por base) ===", args.limit)
     else:
         log.info("=== Build del catálogo ===")
@@ -250,7 +272,7 @@ def main() -> None:
     token = get_token()
     api = Api(token)
 
-    preparar_salida()
+    preparar_salida(solo_render=args.solo_render)
 
     productos: list[Producto] = []
     descartados = 0
@@ -290,7 +312,12 @@ def main() -> None:
             nombres_usados.add(nombre_final)
 
             destino = OUT_IMG_DIR / f"{nombre_final}.webp"
-            if not descargar_y_optimizar(url, destino):
+            if args.solo_render:
+                # Reusar la foto ya descargada; si no existe, se omite.
+                if not destino.exists():
+                    descartados += 1
+                    continue
+            elif not descargar_y_optimizar(url, destino):
                 descartados += 1
                 continue
 
