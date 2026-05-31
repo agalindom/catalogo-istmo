@@ -137,10 +137,16 @@ main { padding: 1.25rem; }
 
 .card-info {
   display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.card-info-top {
+  display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.55rem 0.7rem;
 }
 
 .codigo {
@@ -153,6 +159,12 @@ main { padding: 1.25rem; }
   color: var(--ink-soft);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.precio {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-ink);
 }
 
 .vacio,

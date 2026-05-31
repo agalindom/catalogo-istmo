@@ -50,6 +50,8 @@ OUT_ASSETS_DIR = OUT_DIR / "assets"
 TOKEN_ENV = "airtable_sari_token"
 
 # Las 3 bases. `codigo`/`foto` son los nombres de campo reales en cada base.
+CAMPO_PRECIO = "Precio contado en efectivo"
+
 BASES = [
     {
         "origen": "Istmo",
@@ -57,6 +59,7 @@ BASES = [
         "table_id": "tblZcEO4pd4PFzzwJ",
         "campo_codigo": "Codigo",
         "campo_foto": "Foto",
+        "campo_precio": CAMPO_PRECIO,
     },
     {
         "origen": "Lienzos",
@@ -64,6 +67,7 @@ BASES = [
         "table_id": "tblUkmiGsPJ2V7fEs",
         "campo_codigo": "Name",
         "campo_foto": "Attachments",
+        "campo_precio": CAMPO_PRECIO,
     },
     {
         "origen": "Trajes",
@@ -71,6 +75,7 @@ BASES = [
         "table_id": "tblMBfQeqmQ4LWZgz",
         "campo_codigo": "Name",
         "campo_foto": "Attachments",
+        "campo_precio": CAMPO_PRECIO,
     },
 ]
 
@@ -108,13 +113,19 @@ log = logging.getLogger("build")
 class Producto:
     codigo: str
     origen: str
-    imagen: str  # ruta relativa, ej. "img/istmo-573.webp"
+    imagen: str          # ruta relativa, ej. "img/istmo-573.webp"
+    precio: int | None = None  # pesos; None si la base no tiene precio
 
     @property
     def codigo_orden(self):
         """Clave de orden: numérica si el código es número, si no alfabética."""
         m = re.match(r"^\s*(\d+)", self.codigo)
         return (0, int(m.group(1))) if m else (1, self.codigo.lower())
+
+    @property
+    def precio_fmt(self) -> str:
+        """Precio formateado, ej. '$1,200'. Cadena vacía si no hay precio."""
+        return f"${self.precio:,.0f}" if self.precio is not None else ""
 
 
 def slugify(value: str) -> str:
@@ -263,6 +274,12 @@ def main() -> None:
                 log.info("    descartado (sin foto): %s/%s", base["origen"], codigo)
                 continue
 
+            precio_raw = fields.get(base["campo_precio"])
+            try:
+                precio = int(round(float(precio_raw))) if precio_raw not in (None, "") else None
+            except (TypeError, ValueError):
+                precio = None
+
             # Nombre de archivo único; si colisiona, sufijo incremental.
             nombre = f"{slugify(base['origen'])}-{slugify(codigo)}"
             nombre_final = nombre
@@ -278,7 +295,12 @@ def main() -> None:
                 continue
 
             productos.append(
-                Producto(codigo=codigo, origen=base["origen"], imagen=f"img/{nombre_final}.webp")
+                Producto(
+                    codigo=codigo,
+                    origen=base["origen"],
+                    imagen=f"img/{nombre_final}.webp",
+                    precio=precio,
+                )
             )
             if DOWNLOAD_PAUSE:
                 time.sleep(DOWNLOAD_PAUSE)
@@ -293,7 +315,7 @@ def main() -> None:
     log.info("=== Listo en %.1fs ===", dur)
     log.info("  productos publicados: %d", len(productos))
     log.info("  descartados (sin código/foto o descarga fallida): %d", descartados)
-    log.info("  salida: %s", OUT_DIR)
+    log.info("  carpeta de salida: %s", OUT_DIR)
 
 
 if __name__ == "__main__":

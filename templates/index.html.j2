@@ -30,13 +30,16 @@
   <main>
     <ul class="grid" id="grid">
       {% for p in productos %}
-      <li class="card" data-origen="{{ p.origen }}" data-codigo="{{ p.codigo|lower }}">
+      <li class="card" data-origen="{{ p.origen }}" data-codigo="{{ p.codigo|lower }}" data-precio="{{ p.precio_fmt }}">
         <div class="card-img">
           <img src="{{ p.imagen }}" alt="{{ p.origen }} {{ p.codigo }}" loading="lazy" decoding="async">
         </div>
         <div class="card-info">
-          <span class="codigo">{{ p.codigo }}</span>
-          <span class="origen">{{ p.origen }}</span>
+          <div class="card-info-top">
+            <span class="codigo">{{ p.codigo }}</span>
+            <span class="origen">{{ p.origen }}</span>
+          </div>
+          {% if p.precio_fmt %}<span class="precio">{{ p.precio_fmt }}</span>{% endif %}
         </div>
       </li>
       {% endfor %}

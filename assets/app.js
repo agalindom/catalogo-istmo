@@ -58,11 +58,13 @@
     var img = card.querySelector("img");
     var codigo = card.querySelector(".codigo");
     var origen = card.querySelector(".origen");
+    var precio = card.dataset.precio;
     lbImg.src = img.src;
     lbImg.alt = img.alt;
     lbCaption.textContent =
       (codigo ? codigo.textContent : "") +
-      (origen ? "  ·  " + origen.textContent : "");
+      (origen ? "  ·  " + origen.textContent : "") +
+      (precio ? "  ·  " + precio : "");
     lightbox.hidden = false;
     lightbox.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
