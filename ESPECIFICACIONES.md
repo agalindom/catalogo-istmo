@@ -1,7 +1,12 @@
-# Especificaciones — Catálogo web de productos (Istmo / Lienzos / Trajes)
+# Especificaciones — Catálogo web de productos (TANDA 1 ahora en bodega)
 
-> Documento de especificaciones. Define **qué** se va a construir y **cómo**, antes de escribir código.
-> Fecha: 2026-05-30
+> Documento de especificaciones. Define **qué** se va a construir y **cómo**.
+> Fecha original: 2026-05-30 · Actualizado: 2026-07-01
+
+> **Cambio de fuente (2026-07-01):** el catálogo original de **3 bases**
+> (Istmo / Lienzos / Trajes) quedó **deprecado**. Ahora la fuente es **una sola
+> base** (`TANDA 1 ahora en bodega`) y el catálogo **sí muestra precio y medidas**.
+> El código de build es el mismo; solo cambió la fuente de datos y las columnas.
 
 ---
 
@@ -12,16 +17,16 @@ Generar un **catálogo web estático** que exponga los productos almacenados en 
 ## 2. Alcance
 
 ### Dentro del alcance
-- Leer productos de **3 bases** de Airtable (solo lectura).
-- Mostrar por producto: **Código** + **Foto**. Nada más.
-- Catálogo **único combinado** con filtro por origen (Istmo / Lienzos / Trajes) y buscador por código.
+- Leer productos de **1 base** de Airtable (solo lectura).
+- Mostrar por producto: **Código**, **Foto** y **Precio**; **Medidas** y **descripción** al ampliar la foto.
+- Catálogo **único** con buscador por código.
 - Descargar y **optimizar** las fotos (resolver la expiración de URLs de Airtable).
 - Generar sitio **estático** (HTML + imágenes) y publicarlo en **GitHub Pages**.
 
 ### Fuera del alcance (por ahora)
 - Edición de datos / escritura a Airtable.
 - Login de clientes, carrito, pedidos o pagos.
-- Mostrar precios, medidas, técnica u otros campos (solo código + foto).
+- Filtro por origen / categoría (una sola fuente).
 - Actualización en tiempo real (el catálogo se actualiza al re-construir).
 
 ## 3. Restricciones técnicas que guían el diseño
@@ -42,29 +47,33 @@ Generar un **catálogo web estático** que exponga los productos almacenados en 
 - **Hosting:** GitHub Pages (estático, gratis, CDN).
 - **Sin** servidor en vivo, sin base de datos, sin framework web (FastAPI/Flask no son necesarios para un catálogo solo-lectura).
 
-## 5. Fuentes de datos (Airtable)
+## 5. Fuente de datos (Airtable)
 
-| Base | baseId | tableId | Campo código | Campo foto |
-|------|--------|---------|--------------|------------|
-| Istmo | `appaNMwGX5X7kGL4F` | `tblZcEO4pd4PFzzwJ` | `Codigo` | `Foto` |
-| Lienzos y enaguas | `appkxN7OtOT0X0GxJ` | `tblUkmiGsPJ2V7fEs` | `Name` | `Attachments` |
-| Trajes | `appvIxMVAhGKHamzo` | `tblMBfQeqmQ4LWZgz` | `Name` | `Attachments` |
+Base única **TANDA 1 ahora en bodega** (`appgUsPjhYfClzHSu`), tabla `tblZcEO4pd4PFzzwJ`:
 
-- Volumen aproximado: Istmo 294, Lienzos 307, Trajes 134 → **~735 productos**.
-- Nota: los nombres de campo difieren entre bases; el script los normaliza a un modelo común `{codigo, foto, origen}`.
+| Campo (Airtable) | Uso en el catálogo |
+|------------------|--------------------|
+| `Codigo` | código del producto |
+| `Foto` | foto (se usa la primera del attachment) |
+| `Precio especial EFECTIVO contado` | precio mostrado (fórmula = `REMATE` × 1.10) |
+| `MEDIDAS` | medidas (se muestran en el zoom) |
+| `Detalles` | descripción (se muestra en el zoom) |
+| `DE VENTA EN` | si contiene "vendido", el producto se descarta |
+
+- Volumen: 188 registros → **~185 productos** publicados (se descartan vendidos y precio $0).
 
 ## 6. Modelo de datos normalizado
 
-Cada producto, ya leído de cualquier base, se representa igual:
-
 ```
 Producto:
-  codigo:  str        # ej. "573"
-  origen:  str        # "Istmo" | "Lienzos" | "Trajes"
-  imagen:  str        # ruta local relativa, ej. "img/istmo-573.webp"
+  codigo:   str        # ej. "573"
+  imagen:   str        # ruta local relativa, ej. "img/tanda-1-573.webp"
+  precio:   int        # pesos (siempre presente; precio 0 se descarta)
+  medidas:  str        # texto multilínea (zoom)
+  detalles: str        # descripción (zoom)
 ```
 
-- Nombre de archivo de imagen: `{origen}-{codigo}.webp` (en minúsculas, sin espacios) para evitar colisiones entre bases.
+- Nombre de archivo de imagen: `tanda-1-{codigo}.webp` (minúsculas, sin espacios).
 
 ## 7. Flujo del build (script de Python)
 
@@ -101,12 +110,12 @@ Producto:
 
 ## 9. Frontend (lo que ve el cliente)
 
-- **Grid de tarjetas**: cada tarjeta = foto + código.
-- **Filtro** por origen: Todos / Istmo / Lienzos / Trajes.
+- **Grid de tarjetas**: cada tarjeta = foto + código + precio + nota "Toca la foto para ver medidas y descripción".
 - **Buscador** por código.
+- **Zoom / lightbox**: al tocar una foto se amplía y muestra código, precio, **medidas** y **descripción**.
 - **Lazy load** de imágenes (`loading="lazy"`): el navegador descarga solo lo visible → catálogo rápido y liviano.
 - **Responsive**: se ve bien en celular (los clientes lo abrirán por WhatsApp).
-- Sin backend: todo el filtrado/búsqueda ocurre en el navegador sobre datos ya incluidos.
+- Sin backend: toda la búsqueda ocurre en el navegador sobre datos ya incluidos.
 
 ## 10. Dimensionamiento / recursos
 

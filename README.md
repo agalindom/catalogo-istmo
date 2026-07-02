@@ -1,9 +1,15 @@
-# Catálogo web (Istmo / Lienzos / Trajes)
+# Catálogo web (TANDA 1 ahora en bodega)
 
 Catálogo estático que muestra productos (textiles) guardados en Airtable, para
 compartir a clientes por link. Solo lectura. Se publica en GitHub Pages.
 
-Ver `ESPECIFICACIONES.md` y `DECISIONES_PENDIENTES.md` para el contexto completo.
+Cada producto muestra **foto, código y precio**; al tocar la foto se ven las
+**medidas y la descripción**.
+
+> **Nota:** el catálogo anterior de 3 bases (Istmo / Lienzos / Trajes) quedó
+> **deprecado**. La fuente actual es una sola base y el código de build es el
+> mismo, solo cambió la fuente de datos y las columnas mostradas. Ver
+> `ESPECIFICACIONES.md`.
 
 ## Setup
 
@@ -18,7 +24,8 @@ export airtable_sari_token='patXXXXXXXX...'
 ```
 
 El token requiere los scopes `schema.bases:read` y `data.records:read` y acceso
-a las 3 bases. **Nunca** se sube al repositorio.
+a la base `TANDA 1 ahora en bodega` (`appgUsPjhYfClzHSu`). **Nunca** se sube al
+repositorio.
 
 ## Construir el catálogo
 
@@ -36,9 +43,16 @@ docs/
   img/*.webp
 ```
 
-El build hace *full rebuild*: lee las 3 bases, descarga y optimiza las fotos a
-WebP (~1200px), y renderiza el HTML. Los productos sin foto se descartan y se
-registran en `build.log`.
+El build hace *full rebuild*: lee la base, descarga y optimiza las fotos a
+WebP (~1200px), y renderiza el HTML. Se descartan (y se registran en `build.log`)
+los productos **sin foto**, **marcados "vendido"** o con **precio $0**.
+
+Opciones:
+
+```bash
+python3 build.py --limit 15    # mini-preview: 15 productos (para probar diseño)
+python3 build.py --solo-render  # re-genera HTML reusando fotos ya descargadas
+```
 
 ## Publicar
 
@@ -48,10 +62,10 @@ link. Para actualizar: re-correr `build.py` y volver a subir.
 ## Estructura del proyecto
 
 ```
-build.py                 # script de build
+build.py                 # script de build (fuente: 1 base de Airtable)
 requirements.txt
 templates/index.html.j2  # template Jinja2
 assets/style.css         # paleta clara/neutra
-assets/app.js            # filtro + búsqueda (en el navegador)
-docs/                  # salida generada (no versionar el contenido pesado)
+assets/app.js            # búsqueda por código + zoom (en el navegador)
+docs/                    # salida generada
 ```

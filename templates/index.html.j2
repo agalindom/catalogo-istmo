@@ -17,12 +17,6 @@
         placeholder="Buscar por código…"
         autocomplete="off"
         aria-label="Buscar por código">
-      <div class="filtros" role="group" aria-label="Filtrar por origen">
-        <button class="filtro is-active" data-origen="">Todos</button>
-        {% for origen in origenes %}
-        <button class="filtro" data-origen="{{ origen }}">{{ origen }}</button>
-        {% endfor %}
-      </div>
     </div>
     <p class="conteo" id="conteo"></p>
   </header>
@@ -30,16 +24,16 @@
   <main>
     <ul class="grid" id="grid">
       {% for p in productos %}
-      <li class="card" data-origen="{{ p.origen }}" data-codigo="{{ p.codigo|lower }}"{% if ver_precios and p.precio_fmt %} data-precio="{{ p.precio_fmt }}"{% endif %}>
+      <li class="card" data-codigo="{{ p.codigo|lower }}" data-precio="{{ p.precio_fmt }}" data-medidas="{{ p.medidas }}" data-detalles="{{ p.detalles }}">
         <div class="card-img">
-          <img src="{{ p.imagen }}" alt="{{ p.origen }} {{ p.codigo }}" loading="lazy" decoding="async">
+          <img src="{{ p.imagen }}" alt="Código {{ p.codigo }}" loading="lazy" decoding="async">
         </div>
         <div class="card-info">
           <div class="card-info-top">
             <span class="codigo">{{ p.codigo }}</span>
-            <span class="origen">{{ p.origen }}</span>
+            <span class="precio">{{ p.precio_fmt }}</span>
           </div>
-          {% if ver_precios and p.precio_fmt %}<span class="precio">{{ p.precio_fmt }}</span>{% endif %}
+          <span class="ver-mas">Toca la foto para ver medidas y descripción</span>
         </div>
       </li>
       {% endfor %}
@@ -53,6 +47,7 @@
     <figure class="lightbox-fig">
       <img id="lightboxImg" src="" alt="">
       <figcaption id="lightboxCaption"></figcaption>
+      <div class="lightbox-medidas" id="lightboxMedidas"></div>
     </figure>
   </div>
 

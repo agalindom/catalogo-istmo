@@ -68,29 +68,6 @@ body {
 }
 .search:focus { border-color: var(--accent); }
 
-.filtros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.filtro {
-  padding: 0.45rem 0.9rem;
-  font-size: 0.9rem;
-  color: var(--ink-soft);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-.filtro:hover { border-color: var(--accent); }
-.filtro.is-active {
-  background: var(--accent);
-  color: var(--accent-ink);
-  border-color: var(--accent);
-}
-
 .conteo {
   margin: 0.6rem 0 0;
   font-size: 0.82rem;
@@ -154,17 +131,16 @@ main { padding: 1.25rem; }
   font-size: 0.95rem;
 }
 
-.origen {
-  font-size: 0.72rem;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 .precio {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--accent-ink);
+}
+
+.ver-mas {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.01em;
 }
 
 .vacio,
@@ -217,9 +193,20 @@ main { padding: 1.25rem; }
 
 .lightbox-fig figcaption {
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
+
+.lightbox-medidas {
+  max-width: 32rem;
+  color: #f0ede8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-line;   /* respeta los saltos de línea de MEDIDAS */
+  text-align: left;
+}
+.lightbox-medidas[hidden] { display: none; }
 
 .lightbox-close {
   position: absolute;

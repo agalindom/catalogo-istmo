@@ -1,4 +1,4 @@
-/* Catálogo — filtro por origen + búsqueda por código, todo en el navegador.
+/* Catálogo — búsqueda por código, todo en el navegador.
    No hay backend: opera sobre las tarjetas ya incluidas en el HTML. */
 
 (function () {
@@ -7,11 +7,9 @@
   var grid = document.getElementById("grid");
   var cards = Array.prototype.slice.call(grid.querySelectorAll(".card"));
   var buscador = document.getElementById("buscador");
-  var filtros = Array.prototype.slice.call(document.querySelectorAll(".filtro"));
   var conteo = document.getElementById("conteo");
   var vacio = document.getElementById("vacio");
 
-  var origenActivo = "";   // "" = todos
   var consulta = "";
 
   function aplicar() {
@@ -19,9 +17,7 @@
     var q = consulta.trim().toLowerCase();
 
     cards.forEach(function (card) {
-      var coincideOrigen = !origenActivo || card.dataset.origen === origenActivo;
-      var coincideCodigo = !q || card.dataset.codigo.indexOf(q) !== -1;
-      var mostrar = coincideOrigen && coincideCodigo;
+      var mostrar = !q || card.dataset.codigo.indexOf(q) !== -1;
       card.hidden = !mostrar;
       if (mostrar) visibles++;
     });
@@ -38,33 +34,29 @@
     t = setTimeout(aplicar, 120);
   });
 
-  // Filtros por origen
-  filtros.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      filtros.forEach(function (b) { b.classList.remove("is-active"); });
-      btn.classList.add("is-active");
-      origenActivo = btn.dataset.origen || "";
-      aplicar();
-    });
-  });
-
   // ----- Lightbox / zoom -----
   var lightbox = document.getElementById("lightbox");
   var lbImg = document.getElementById("lightboxImg");
   var lbCaption = document.getElementById("lightboxCaption");
+  var lbMedidas = document.getElementById("lightboxMedidas");
   var lbClose = document.getElementById("lightboxClose");
 
   function abrirZoom(card) {
     var img = card.querySelector("img");
     var codigo = card.querySelector(".codigo");
-    var origen = card.querySelector(".origen");
     var precio = card.dataset.precio;
+    var medidas = card.dataset.medidas || "";
+    var detalles = card.dataset.detalles || "";
     lbImg.src = img.src;
     lbImg.alt = img.alt;
     lbCaption.textContent =
       (codigo ? codigo.textContent : "") +
-      (origen ? "  ·  " + origen.textContent : "") +
       (precio ? "  ·  " + precio : "");
+    // Medidas + descripción (con saltos de línea vía CSS white-space).
+    var texto = medidas;
+    if (detalles) texto += (texto ? "\n\n" : "") + detalles;
+    lbMedidas.textContent = texto;
+    lbMedidas.hidden = !texto;
     lightbox.hidden = false;
     lightbox.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";

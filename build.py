@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """
-Build del catálogo web estático (Istmo / Lienzos / Trajes).
+Build del catálogo web estático (TANDA 1 ahora en bodega).
 
-Lee 3 bases de Airtable (solo lectura), descarga y optimiza las fotos a WebP,
-y genera un sitio estático en /salida listo para publicar en GitHub Pages.
+Lee 1 base de Airtable (solo lectura), descarga y optimiza las fotos a WebP,
+y genera un sitio estático en /docs listo para publicar en GitHub Pages.
 
-Decisiones (ver ESPECIFICACIONES.md §13):
-  - Orden: por código ascendente. Filtro por origen en el navegador.
-  - Cada tarjeta muestra su origen.
+El catálogo de 3 bases (Istmo / Lienzos / Trajes) quedó deprecado; ahora la
+fuente es una sola base con productos cuyo precio SÍ se muestra al cliente.
+
+Decisiones:
+  - Orden: por código ascendente.
+  - Cada tarjeta muestra foto + código + precio + nota "toca para ver medidas".
+  - Medidas y descripción se muestran al ampliar la foto (zoom).
   - Producto sin foto (o descarga fallida): se descarta y se registra en log.
+  - Producto marcado "vendido" o con precio $0: se descarta y se registra en log.
   - Producto con varias fotos: se usa solo la primera.
 
 Requisitos de entorno:
@@ -49,33 +54,19 @@ OUT_ASSETS_DIR = OUT_DIR / "assets"
 
 TOKEN_ENV = "airtable_sari_token"
 
-# Las 3 bases. `codigo`/`foto` son los nombres de campo reales en cada base.
-CAMPO_PRECIO = "Precio contado en efectivo"
-
+# Fuente única: base "TANDA 1 ahora en bodega".
+# `campo_*` son los nombres de campo reales en la base.
 BASES = [
     {
-        "origen": "Istmo",
-        "base_id": "appaNMwGX5X7kGL4F",
+        "origen": "Tanda 1",  # solo para el prefijo del archivo de imagen
+        "base_id": "appgUsPjhYfClzHSu",
         "table_id": "tblZcEO4pd4PFzzwJ",
         "campo_codigo": "Codigo",
         "campo_foto": "Foto",
-        "campo_precio": CAMPO_PRECIO,
-    },
-    {
-        "origen": "Lienzos",
-        "base_id": "appkxN7OtOT0X0GxJ",
-        "table_id": "tblUkmiGsPJ2V7fEs",
-        "campo_codigo": "Name",
-        "campo_foto": "Attachments",
-        "campo_precio": CAMPO_PRECIO,
-    },
-    {
-        "origen": "Trajes",
-        "base_id": "appvIxMVAhGKHamzo",
-        "table_id": "tblMBfQeqmQ4LWZgz",
-        "campo_codigo": "Name",
-        "campo_foto": "Attachments",
-        "campo_precio": CAMPO_PRECIO,
+        "campo_precio": "Precio especial EFECTIVO contado",  # fórmula = REMATE * 1.10
+        "campo_medidas": "MEDIDAS",
+        "campo_detalles": "Detalles",   # "descripción" del producto
+        "campo_venta": "DE VENTA EN",
     },
 ]
 
@@ -89,11 +80,6 @@ REQUEST_TIMEOUT = 30      # seg por descarga
 DOWNLOAD_PAUSE = 0.0      # las fotos van al CDN de Airtable, no a la API
 
 TITULO = "Catálogo"
-
-# Mostrar precios en el catálogo. Por ahora False (decisión de negocio).
-# Ponlo en True para que los precios aparezcan en las tarjetas y el zoom.
-# Cuando es False, los precios NO se escriben en el HTML publicado.
-VER_PRECIOS = False
 
 # --------------------------------------------------------------------------- #
 # Logging
@@ -117,9 +103,10 @@ log = logging.getLogger("build")
 @dataclass
 class Producto:
     codigo: str
-    origen: str
-    imagen: str          # ruta relativa, ej. "img/istmo-573.webp"
-    precio: int | None = None  # pesos; None si la base no tiene precio
+    imagen: str          # ruta relativa, ej. "img/tanda-1-573.webp"
+    precio: int          # pesos (siempre presente; los de precio 0 se descartan)
+    medidas: str = ""    # texto multilínea; se muestra en el zoom
+    detalles: str = ""   # descripción; se muestra en el zoom
 
     @property
     def codigo_orden(self):
@@ -129,8 +116,8 @@ class Producto:
 
     @property
     def precio_fmt(self) -> str:
-        """Precio formateado, ej. '$1,200'. Cadena vacía si no hay precio."""
-        return f"${self.precio:,.0f}" if self.precio is not None else ""
+        """Precio formateado, ej. '$1,200'."""
+        return f"${self.precio:,.0f}"
 
 
 def slugify(value: str) -> str:
@@ -241,12 +228,9 @@ def renderizar(productos: list[Producto]) -> None:
         autoescape=select_autoescape(["html"]),
     )
     template = env.get_template("index.html.j2")
-    origenes = sorted({p.origen for p in productos})
-    html = template.render(
-        titulo=TITULO, productos=productos, origenes=origenes, ver_precios=VER_PRECIOS
-    )
+    html = template.render(titulo=TITULO, productos=productos)
     (OUT_DIR / "index.html").write_text(html, encoding="utf-8")
-    log.info("  index.html generado (%d productos, precios=%s)", len(productos), VER_PRECIOS)
+    log.info("  index.html generado (%d productos)", len(productos))
 
 
 def main() -> None:
@@ -290,17 +274,32 @@ def main() -> None:
                 log.info("    descartado (sin código): rec %s", rec.get("id"))
                 continue
 
+            # Descartar productos ya vendidos.
+            venta = str(fields.get(base["campo_venta"], "")).lower()
+            if "vendido" in venta:
+                descartados += 1
+                log.info("    descartado (vendido): %s", codigo)
+                continue
+
             url = extraer_foto_url(fields, base["campo_foto"])
             if not url:
                 descartados += 1
-                log.info("    descartado (sin foto): %s/%s", base["origen"], codigo)
+                log.info("    descartado (sin foto): %s", codigo)
                 continue
 
             precio_raw = fields.get(base["campo_precio"])
             try:
-                precio = int(round(float(precio_raw))) if precio_raw not in (None, "") else None
+                precio = int(round(float(precio_raw))) if precio_raw not in (None, "") else 0
             except (TypeError, ValueError):
-                precio = None
+                precio = 0
+            # Descartar precio $0 (REMATE=0): no se publica sin precio válido.
+            if precio <= 0:
+                descartados += 1
+                log.info("    descartado (precio $0): %s", codigo)
+                continue
+
+            medidas = str(fields.get(base["campo_medidas"], "") or "").strip()
+            detalles = str(fields.get(base["campo_detalles"], "") or "").strip()
 
             # Nombre de archivo único; si colisiona, sufijo incremental.
             nombre = f"{slugify(base['origen'])}-{slugify(codigo)}"
@@ -324,9 +323,10 @@ def main() -> None:
             productos.append(
                 Producto(
                     codigo=codigo,
-                    origen=base["origen"],
                     imagen=f"img/{nombre_final}.webp",
                     precio=precio,
+                    medidas=medidas,
+                    detalles=detalles,
                 )
             )
             if DOWNLOAD_PAUSE:
@@ -341,7 +341,7 @@ def main() -> None:
     dur = time.time() - inicio
     log.info("=== Listo en %.1fs ===", dur)
     log.info("  productos publicados: %d", len(productos))
-    log.info("  descartados (sin código/foto o descarga fallida): %d", descartados)
+    log.info("  descartados (sin código/foto, vendido, precio $0 o descarga fallida): %d", descartados)
     log.info("  carpeta de salida: %s", OUT_DIR)
 
 
