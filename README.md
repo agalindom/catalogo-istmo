@@ -3,8 +3,7 @@
 Catálogo estático que muestra productos (textiles) guardados en Airtable, para
 compartir a clientes por link. Solo lectura. Se publica en GitHub Pages.
 
-Cada producto muestra **foto, código y precio**; al tocar la foto se ven las
-**medidas y la descripción**.
+Cada producto muestra **foto, código y precio**; al tocar la foto se amplía (zoom).
 
 > **Nota:** el catálogo anterior de 3 bases (Istmo / Lienzos / Trajes) quedó
 > **deprecado**. La fuente actual es una sola base y el código de build es el

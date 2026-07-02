@@ -10,8 +10,7 @@ fuente es una sola base con productos cuyo precio SÍ se muestra al cliente.
 
 Decisiones:
   - Orden: por código ascendente.
-  - Cada tarjeta muestra foto + código + precio + nota "toca para ver medidas".
-  - Medidas y descripción se muestran al ampliar la foto (zoom).
+  - Cada tarjeta muestra foto + código + precio. Al tocar la foto: zoom.
   - Producto sin foto (o descarga fallida): se descarta y se registra en log.
   - Producto marcado "vendido" o con precio $0: se descarta y se registra en log.
   - Producto con varias fotos: se usa solo la primera.
@@ -64,8 +63,6 @@ BASES = [
         "campo_codigo": "Codigo",
         "campo_foto": "Foto",
         "campo_precio": "Precio especial EFECTIVO contado",  # fórmula = REMATE * 1.10
-        "campo_medidas": "MEDIDAS",
-        "campo_detalles": "Detalles",   # "descripción" del producto
         "campo_venta": "DE VENTA EN",
     },
 ]
@@ -105,8 +102,6 @@ class Producto:
     codigo: str
     imagen: str          # ruta relativa, ej. "img/tanda-1-573.webp"
     precio: int          # pesos (siempre presente; los de precio 0 se descartan)
-    medidas: str = ""    # texto multilínea; se muestra en el zoom
-    detalles: str = ""   # descripción; se muestra en el zoom
 
     @property
     def codigo_orden(self):
@@ -298,9 +293,6 @@ def main() -> None:
                 log.info("    descartado (precio $0): %s", codigo)
                 continue
 
-            medidas = str(fields.get(base["campo_medidas"], "") or "").strip()
-            detalles = str(fields.get(base["campo_detalles"], "") or "").strip()
-
             # Nombre de archivo único; si colisiona, sufijo incremental.
             nombre = f"{slugify(base['origen'])}-{slugify(codigo)}"
             nombre_final = nombre
@@ -325,8 +317,6 @@ def main() -> None:
                     codigo=codigo,
                     imagen=f"img/{nombre_final}.webp",
                     precio=precio,
-                    medidas=medidas,
-                    detalles=detalles,
                 )
             )
             if DOWNLOAD_PAUSE:

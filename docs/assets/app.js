@@ -38,25 +38,17 @@
   var lightbox = document.getElementById("lightbox");
   var lbImg = document.getElementById("lightboxImg");
   var lbCaption = document.getElementById("lightboxCaption");
-  var lbMedidas = document.getElementById("lightboxMedidas");
   var lbClose = document.getElementById("lightboxClose");
 
   function abrirZoom(card) {
     var img = card.querySelector("img");
     var codigo = card.querySelector(".codigo");
     var precio = card.dataset.precio;
-    var medidas = card.dataset.medidas || "";
-    var detalles = card.dataset.detalles || "";
     lbImg.src = img.src;
     lbImg.alt = img.alt;
     lbCaption.textContent =
       (codigo ? codigo.textContent : "") +
       (precio ? "  ·  " + precio : "");
-    // Medidas + descripción (con saltos de línea vía CSS white-space).
-    var texto = medidas;
-    if (detalles) texto += (texto ? "\n\n" : "") + detalles;
-    lbMedidas.textContent = texto;
-    lbMedidas.hidden = !texto;
     lightbox.hidden = false;
     lightbox.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";

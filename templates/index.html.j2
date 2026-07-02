@@ -24,7 +24,7 @@
   <main>
     <ul class="grid" id="grid">
       {% for p in productos %}
-      <li class="card" data-codigo="{{ p.codigo|lower }}" data-precio="{{ p.precio_fmt }}" data-medidas="{{ p.medidas }}" data-detalles="{{ p.detalles }}">
+      <li class="card" data-codigo="{{ p.codigo|lower }}" data-precio="{{ p.precio_fmt }}">
         <div class="card-img">
           <img src="{{ p.imagen }}" alt="Código {{ p.codigo }}" loading="lazy" decoding="async">
         </div>
@@ -33,7 +33,6 @@
             <span class="codigo">{{ p.codigo }}</span>
             <span class="precio">{{ p.precio_fmt }}</span>
           </div>
-          <span class="ver-mas">Toca la foto para ver medidas y descripción</span>
         </div>
       </li>
       {% endfor %}
@@ -47,7 +46,6 @@
     <figure class="lightbox-fig">
       <img id="lightboxImg" src="" alt="">
       <figcaption id="lightboxCaption"></figcaption>
-      <div class="lightbox-medidas" id="lightboxMedidas"></div>
     </figure>
   </div>
 

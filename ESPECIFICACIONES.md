@@ -18,7 +18,7 @@ Generar un **catálogo web estático** que exponga los productos almacenados en 
 
 ### Dentro del alcance
 - Leer productos de **1 base** de Airtable (solo lectura).
-- Mostrar por producto: **Código**, **Foto** y **Precio**; **Medidas** y **descripción** al ampliar la foto.
+- Mostrar por producto: **Código**, **Foto** y **Precio**. Al tocar la foto se amplía (zoom).
 - Catálogo **único** con buscador por código.
 - Descargar y **optimizar** las fotos (resolver la expiración de URLs de Airtable).
 - Generar sitio **estático** (HTML + imágenes) y publicarlo en **GitHub Pages**.
@@ -56,8 +56,6 @@ Base única **TANDA 1 ahora en bodega** (`appgUsPjhYfClzHSu`), tabla `tblZcEO4pd
 | `Codigo` | código del producto |
 | `Foto` | foto (se usa la primera del attachment) |
 | `Precio especial EFECTIVO contado` | precio mostrado (fórmula = `REMATE` × 1.10) |
-| `MEDIDAS` | medidas (se muestran en el zoom) |
-| `Detalles` | descripción (se muestra en el zoom) |
 | `DE VENTA EN` | si contiene "vendido", el producto se descarta |
 
 - Volumen: 188 registros → **~185 productos** publicados (se descartan vendidos y precio $0).
@@ -69,8 +67,6 @@ Producto:
   codigo:   str        # ej. "573"
   imagen:   str        # ruta local relativa, ej. "img/tanda-1-573.webp"
   precio:   int        # pesos (siempre presente; precio 0 se descarta)
-  medidas:  str        # texto multilínea (zoom)
-  detalles: str        # descripción (zoom)
 ```
 
 - Nombre de archivo de imagen: `tanda-1-{codigo}.webp` (minúsculas, sin espacios).
@@ -110,9 +106,9 @@ Producto:
 
 ## 9. Frontend (lo que ve el cliente)
 
-- **Grid de tarjetas**: cada tarjeta = foto + código + precio + nota "Toca la foto para ver medidas y descripción".
+- **Grid de tarjetas**: cada tarjeta = foto + código + precio.
 - **Buscador** por código.
-- **Zoom / lightbox**: al tocar una foto se amplía y muestra código, precio, **medidas** y **descripción**.
+- **Zoom / lightbox**: al tocar una foto se amplía y muestra código y precio.
 - **Lazy load** de imágenes (`loading="lazy"`): el navegador descarga solo lo visible → catálogo rápido y liviano.
 - **Responsive**: se ve bien en celular (los clientes lo abrirán por WhatsApp).
 - Sin backend: toda la búsqueda ocurre en el navegador sobre datos ya incluidos.
